@@ -9,6 +9,7 @@ using AForge.Video;
 using Accord.Video.FFMPEG;
 using System.IO;
 using System.Diagnostics;
+using Serilog;
 
 namespace VideoRecorderLibrary
 {
@@ -40,7 +41,10 @@ namespace VideoRecorderLibrary
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Information(ex.ToString());
+            }
         }
 
         private bool TimeOrMemoryLimitExceeded()

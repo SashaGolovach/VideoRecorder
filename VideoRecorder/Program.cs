@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using VideoRecorderLibrary;
 using AForge.Video.DirectShow;
 using System.IO;
+using Serilog;
 
 namespace VideoRecorder
 {
     class Program
     {
-        static int time = 15_000;
         public static void ScreenVideoRecording()
         {
             var configuration = new Configuration()
@@ -20,13 +20,10 @@ namespace VideoRecorder
                 VideoSourceName = "Screen",
                 VideoMaxDuration = new TimeSpan(0, 0, 4)
             };
-            using (var recorder = new ScreenRecorder(configuration))
-            {
-                recorder.StartRecording();
-                Thread.Sleep(time);
-                recorder.StopRecording();
-            }
+            var recorder = new ScreenRecorder(configuration);
+            recorder.StartRecording();
         }
+
         public static void CameraVideoRecording(FilterInfo c)
         {
             var configuration = new Configuration()
@@ -34,15 +31,17 @@ namespace VideoRecorder
                 VideoSourceName = "Cam",
                 VideoMaxDuration = new TimeSpan(0, 0, 4)
             };
-            using (var recorder = new CameraRecorder(c, configuration))
-            {
-                recorder.StartRecording();
-                Thread.Sleep(time);
-                recorder.StopRecording();
-            }
+            var recorder = new CameraRecorder(c, configuration);
+            recorder.StartRecording();
         }
+
         static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.Console()
+            .CreateLogger();
+
             Directory.SetCurrentDirectory(Directory.GetCurrentDirectory() + "\\videos\\");
             var tList = new List<Thread>();
             tList.Add(new Thread(ScreenVideoRecording));
@@ -55,6 +54,10 @@ namespace VideoRecorder
             {
                 t.Start();
                 Thread.Sleep(1000);
+            }
+            while (true)
+            {
+
             }
         }
     }
