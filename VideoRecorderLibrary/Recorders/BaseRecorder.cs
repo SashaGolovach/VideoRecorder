@@ -71,7 +71,7 @@ namespace VideoRecorderLibrary
             _firstFrameTime.Start();
 
             _fileName = _configuration.GenerateFileName();
-            _writer = VideoRecordersManager.GetVideoFileWriter();//new VideoFileWriter();
+            _writer = VideoFileWritersManager.GetVideoFileWriter();//new VideoFileWriter();
             _writer.Open(_fileName + _configuration.VideoFormat, resolution.Width, resolution.Height);
 
             _recording = true;

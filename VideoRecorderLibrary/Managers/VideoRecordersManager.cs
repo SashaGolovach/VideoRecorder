@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace VideoRecorderLibrary.Managers
 {
-    public static class VideoRecordersManager
+    internal static class VideoFileWritersManager
     {
         public static VideoFileWriter GetVideoFileWriter()
         {
