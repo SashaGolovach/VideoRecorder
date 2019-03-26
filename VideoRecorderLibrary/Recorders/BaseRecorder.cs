@@ -10,6 +10,7 @@ using Accord.Video.FFMPEG;
 using System.IO;
 using System.Diagnostics;
 using Serilog;
+using VideoRecorderLibrary.Managers;
 
 namespace VideoRecorderLibrary
 {
@@ -29,15 +30,15 @@ namespace VideoRecorderLibrary
             {
                 if (_recording)
                 {
+                    if (TimeOrMemoryLimitExceeded())
+                    {
+                        StopVideoFileWriter();
+                        StartNewVideoFileWriter();
+                        return;
+                    }
                     using (var bitmap = (Bitmap)eventArgs.Frame.Clone())
                     {
                         _writer.WriteVideoFrame(bitmap, _firstFrameTime.Elapsed);
-                        if (TimeOrMemoryLimitExceeded())
-                        {
-                            StopVideoFileWriter();
-                            StartNewVideoFileWriter();
-                            return;
-                        }
                     }
                 }
             }
@@ -49,6 +50,7 @@ namespace VideoRecorderLibrary
 
         private bool TimeOrMemoryLimitExceeded()
         {
+
             var duration = _firstFrameTime.Elapsed;
             if (_configuration.VideoMaxDuration != null && duration >= _configuration.VideoMaxDuration)
                 return true;
@@ -69,7 +71,7 @@ namespace VideoRecorderLibrary
             _firstFrameTime.Start();
 
             _fileName = _configuration.GenerateFileName();
-            _writer = new VideoFileWriter();
+            _writer = VideoRecordersManager.GetVideoFileWriter();//new VideoFileWriter();
             _writer.Open(_fileName + _configuration.VideoFormat, resolution.Width, resolution.Height);
 
             _recording = true;
@@ -95,16 +97,29 @@ namespace VideoRecorderLibrary
             _firstFrameTime.Stop();
             _writer.Close();
             _writer.Dispose();
+
+            MoveRecordedVideo();
         }
 
-        //private void MoveRecordedVideo()
-        //{
-        //    string fileName = _fileName + _configuration.VideoFormat;
-        //    if (!Directory.Exists(_configuration.VideosFolderPath))
-        //        Directory.CreateDirectory(_configuration.VideosFolderPath);
-        //    File.Move(fileName, _configuration.VideosFolderPath + fileName);
-        //    File.Delete(fileName);
-        //}
+        private void MoveRecordedVideo()
+        {
+            string fileName = _fileName + _configuration.VideoFormat;
+            if (!Directory.Exists(_configuration.VideosFolderPath))
+                Directory.CreateDirectory(_configuration.VideosFolderPath);
+            while (true)
+            {
+                try
+                {
+                    File.Move(fileName, _configuration.VideosFolderPath + fileName);
+                    break;
+                }
+                catch (IOException) { }
+            }
+
+            
+            VideoFilesManager.CheckMemoryLimitForAllVideos(_configuration.VideosFolderPath);
+            VideoFilesManager.CheckTimeLimitForAllVideos(_configuration.VideosFolderPath);
+        }
 
         public void Dispose()
         {

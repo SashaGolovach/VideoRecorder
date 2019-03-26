@@ -9,12 +9,12 @@ namespace VideoRecorderLibrary
     public class Configuration
     {
         public string VideoFormat { get; } = ".avi";
-        public TimeSpan VideoMaxDuration { get; set; }
-        public string VideoSourceName { get; set; }
+        public TimeSpan? VideoMaxDuration { get; set; }
+        public string VideosFolderPath { get; set; }
         public string GenerateFileName()
         {
             var date = DateTime.Now;
-            return String.Join(".", VideoSourceName, date.Day, date.Month, date.Year, date.Hour, date.Minute, date.Second);
+            return String.Join(".", date.Day, date.Month, date.Year, date.Hour, date.Minute, date.Second);
         }
     }
 }
