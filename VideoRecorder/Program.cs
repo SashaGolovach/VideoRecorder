@@ -19,7 +19,7 @@ namespace VideoRecorder
             var configuration = new Configuration()
             {
                 VideosFolderPath = Directory.GetCurrentDirectory() + @"\Screen\",
-                VideoMaxDuration = new TimeSpan(0, 0, 4)
+                VideoMaxDuration = new TimeSpan(0, 0, 10)
             };
             var recorder = new ScreenRecorder(configuration);
             recorder.StartRecording();
@@ -30,7 +30,7 @@ namespace VideoRecorder
             var configuration = new Configuration()
             {
                 VideosFolderPath = Directory.GetCurrentDirectory() + @"\Camera\",
-                VideoMaxDuration = new TimeSpan(0, 0, 4)
+                VideoMaxDuration = new TimeSpan(0, 0, 10)
             };
             var recorder = new CameraRecorder(c, configuration);
             recorder.StartRecording();
@@ -43,20 +43,11 @@ namespace VideoRecorder
             .WriteTo.Console()
             .CreateLogger();
 
-            var tList = new List<Thread>();
-            tList.Add(new Thread(ScreenVideoRecording));
+            ScreenVideoRecording();
             foreach (var c in VideoDevicesManager.GetAllVideoDevices())
             {
-                tList.Add(new Thread(() => CameraVideoRecording(c)));
+                CameraVideoRecording(c);
                 Console.WriteLine(c.MonikerString);
-            }
-            //tList[0].Start();
-            VideoFilesManager.MemoryLimit = 10_000_000;
-
-            foreach (var t in tList)
-            {
-                t.Start();
-                Thread.Sleep(1000);
             }
         }
     }

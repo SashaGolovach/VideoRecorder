@@ -10,10 +10,6 @@ namespace VideoRecorderLibrary.Managers
 {
     internal static class VideoFileWritersManager
     {
-        public static VideoFileWriter GetVideoFileWriter()
-        {
-            Thread.Sleep(1000);
-            return new VideoFileWriter();
-        }
+        public static DateTime lastCreated = DateTime.Now;
     }
 }
