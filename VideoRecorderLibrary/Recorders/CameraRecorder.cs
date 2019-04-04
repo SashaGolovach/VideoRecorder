@@ -26,6 +26,8 @@ namespace VideoRecorderLibrary
 
         public CameraRecorder(IVideoSender videoSender, CameraRecorderConfiguration configuration)
         {
+            if (!Directory.Exists(configuration.VideosFolderPath))
+                Directory.CreateDirectory(configuration.VideosFolderPath);
             _configuration = configuration;
             _videoSender = videoSender;
             _connector = new MediaConnector();

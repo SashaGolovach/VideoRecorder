@@ -18,15 +18,13 @@ namespace VideoRecorder
 {
     class Program
     {
-        static List<CameraRecorder> list = new List<CameraRecorder>();
+        static CameraRecorder rec;
         static Timer timer;
-        static WebCamera cam = new WebCamera(WebCameraFactory.GetDevices()[0]);
+        static readonly WebCamera cam = new WebCamera(WebCameraFactory.GetDevices()[0]);
         public static void Renew(object s)
         {
-            foreach (var rec in list)
+            if(rec != null)
                 rec.StopRecording();
-
-            list.Clear();
 
             var configuration = new CameraRecorderConfiguration()
             {
@@ -34,9 +32,10 @@ namespace VideoRecorder
                 VideoFormat = ".mpeg4"
             };
 
-            list.Add(new CameraRecorder(cam, configuration));
-            list.Last().StartRecording();
+            rec = new CameraRecorder(cam, configuration);
+            rec.StartRecording();
         }
+
         public static void ScreenVideoRecording()
         {
             var configuration = new ScreenRecorderConfiguration()
