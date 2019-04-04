@@ -51,6 +51,7 @@ namespace VideoRecorder
         static void Main(string[] args)
         {
             cam.Start();
+            VideoFilesManager.MemoryLimit = 10;
 
             Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()

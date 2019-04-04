@@ -10,7 +10,9 @@ namespace VideoRecorderLibrary.Managers
     public static class VideoFilesManager
     {
         private static long memoryLimit;
-        private static TimeSpan timeLimit;
+        /// <summary>
+        /// Max count of MB that videos folder can be size of
+        /// </summary>
         public static long MemoryLimit
         {
             get { return memoryLimit; }
@@ -18,18 +20,7 @@ namespace VideoRecorderLibrary.Managers
             {
                 if (value <= 0)
                     throw new Exception("Value can't be negative");
-                memoryLimit = value;
-            }
-        }
-
-        public static TimeSpan TimeLimit
-        {
-            get { return TimeLimit; }
-            set
-            {
-                if (value.Equals(TimeSpan.Zero))
-                    throw new Exception("Value can't be 0");
-                TimeLimit = value;
+                memoryLimit = value * 1000_000;
             }
         }
 
@@ -50,10 +41,6 @@ namespace VideoRecorderLibrary.Managers
                     videoFiles[0].Delete();
                 }
             }
-        }
-
-        public static void CheckTimeLimitForAllVideos(string videosFolderPath)
-        {
         }
     }
 }

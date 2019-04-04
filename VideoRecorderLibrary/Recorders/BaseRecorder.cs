@@ -119,7 +119,6 @@ namespace VideoRecorderLibrary
 
 
             VideoFilesManager.CheckMemoryLimitForAllVideos(_configuration.VideosFolderPath);
-            VideoFilesManager.CheckTimeLimitForAllVideos(_configuration.VideosFolderPath);
         }
 
         public void Dispose()
