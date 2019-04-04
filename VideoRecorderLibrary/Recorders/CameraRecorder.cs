@@ -4,39 +4,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using Accord.Video.FFMPEG;
-using AForge.Video;
-using AForge.Video.DirectShow;
 using System.Collections.ObjectModel;
 using System.IO;
+using Ozeki.Camera;
+using Ozeki.Media;
+using System.Diagnostics;
+using System.Threading;
+using VideoRecorderLibrary.Config;
 
 namespace VideoRecorderLibrary
 {
-    public class CameraRecorder : BaseRecorder
+    public class CameraRecorder 
     {
-        private FilterInfo _currentDevice;
-        public CameraRecorder(FilterInfo device, Configuration configuration)
+        MediaConnector _connector;
+        MPEG4Recorder _recorder;
+        IVideoSender _videoSender;
+        CameraRecorderConfiguration _configuration;
+        public string _filePath;
+        Stopwatch _firstFrameTime;
+        bool _recording = false;
+
+        public CameraRecorder(IVideoSender videoSender, CameraRecorderConfiguration configuration)
         {
-            _currentDevice = device;
             _configuration = configuration;
+            _videoSender = videoSender;
+            _connector = new MediaConnector();
         }
 
-        public override void StartRecording()
+        public void StartRecording()
         {
-            var source = new VideoCaptureDevice(_currentDevice.MonikerString);
-            _videoSource = source;
-            source.VideoResolution = source.VideoCapabilities[0];
-            resolution = new Rectangle()
-            {
-                Width = source.VideoResolution.FrameSize.Width,
-                Height = source.VideoResolution.FrameSize.Height
-            };
-            base.StartRecording();
+            _recording = true;
+            _firstFrameTime = new Stopwatch();
+            _firstFrameTime.Start();
+            _filePath = _configuration.VideosFolderPath + _configuration.GenerateFileName() + _configuration.VideoFormat;
+            _recorder = new MPEG4Recorder(_filePath);
+            _recorder.MultiplexFinished += recorder_MultiplexFinished;
+            _connector.Connect(_videoSender, _recorder.VideoRecorder);
         }
 
-        public override void StopRecording()
+        public void StopRecording()
         {
-            base.StopRecording();
+            if (_videoSender == null) return;
+            _recording = false;
+            _connector.Disconnect(_videoSender, _recorder.VideoRecorder);
+            _recorder.Multiplex();
+        }
+
+        private void recorder_MultiplexFinished(object sender, VoIPEventArgs<bool> e)
+        {
+            _recorder.MultiplexFinished -= recorder_MultiplexFinished;
+            _recorder.Dispose();
         }
     }
 }

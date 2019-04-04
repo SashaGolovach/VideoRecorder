@@ -11,7 +11,7 @@ namespace VideoRecorderLibrary
 {
     public class ScreenRecorder : BaseRecorder
     {
-        public ScreenRecorder(Configuration configuration)
+        public ScreenRecorder(ScreenRecorderConfiguration configuration)
         {
             _configuration = configuration;
             resolution = new Rectangle();
@@ -21,8 +21,8 @@ namespace VideoRecorderLibrary
 
         public override void StartRecording()
         {
-                _videoSource = new ScreenCaptureStream(resolution);
-                base.StartRecording();
+            _videoSource = new ScreenCaptureStream(resolution);
+            base.StartRecording();
         }
 
         public override void StopRecording()

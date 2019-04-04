@@ -16,7 +16,7 @@ namespace VideoRecorderLibrary
 {
     public class BaseRecorder : IDisposable
     {
-        internal Configuration _configuration;
+        internal ScreenRecorderConfiguration _configuration;
         internal IVideoSource _videoSource;
         internal VideoFileWriter _writer;
         internal bool _recording;
@@ -50,7 +50,6 @@ namespace VideoRecorderLibrary
 
         private bool TimeOrMemoryLimitExceeded()
         {
-
             var duration = _firstFrameTime.Elapsed;
             if (_configuration.VideoMaxDuration != null && duration >= _configuration.VideoMaxDuration)
                 return true;
@@ -71,7 +70,7 @@ namespace VideoRecorderLibrary
             _firstFrameTime.Start();
 
             _fileName = _configuration.GenerateFileName();
-            while (DateTime.Now - VideoFileWritersManager.lastCreated < new TimeSpan(0,0,2)) { }
+            while (DateTime.Now - VideoFileWritersManager.lastCreated < new TimeSpan(0, 0, 2)) { }
             VideoFileWritersManager.lastCreated = DateTime.Now;
             _writer = new VideoFileWriter();
             _writer.Open(_fileName + _configuration.VideoFormat, resolution.Width, resolution.Height);
@@ -118,7 +117,7 @@ namespace VideoRecorderLibrary
                 catch (IOException) { }
             }
 
-            
+
             VideoFilesManager.CheckMemoryLimitForAllVideos(_configuration.VideosFolderPath);
             VideoFilesManager.CheckTimeLimitForAllVideos(_configuration.VideosFolderPath);
         }

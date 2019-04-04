@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace VideoRecorderLibrary
 {
-    public class Configuration
+    public class ScreenRecorderConfiguration
     {
-        public string VideoFormat { get; } = ".avi";
+        public string VideoFormat { get; set; }
         public TimeSpan? VideoMaxDuration { get; set; }
         public string VideosFolderPath { get; set; }
         public string GenerateFileName()
